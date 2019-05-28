@@ -1,0 +1,28 @@
+version: "2"
+services:
+  php:
+    build: ./php_web
+    volumes:
+      - ./php_web/index.php:/php/index.php
+      - ./bubble-sort-v2.php:/php/bubble-sort-v2.php
+      - ./php_web/php.conf:/etc/nginx/conf.d/php.conf
+  node:
+    build: ./node_web
+    volumes:
+      - ./node_web/index.js:/app/index.js
+      - ./bubble-sort-v2.js:/app/bubble-sort-v2.js
+  phpfpm:
+    image: php:7.3.5-fpm-alpine3.9
+    volumes:
+      - ./php_web/index.php:/php/index.php
+      - ./php_web/docker.conf:/usr/local/etc/php-fpm.d/docker.conf
+      - ./bubble-sort-v2.php:/php/bubble-sort-v2.php
+  benchmark:
+    build: ./benchmark_web
+    volumes:
+      - ./mk_list.php:/tmp/mk_list.php
+      - ./benchmark.log:/tmp/benchmark.log
+    depends_on:
+      - php
+      - node
+      - phpfpm

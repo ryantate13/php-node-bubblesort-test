@@ -19,13 +19,3 @@ function bubbleSort(array &$a)
         }
     }
 }
-
-$nums = json_decode(file_get_contents('list.json'));
-
-$start = microtime(true);
-
-bubbleSort($nums);
-
-$end = microtime(true);
-
-echo $end - $start;
