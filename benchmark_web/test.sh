@@ -7,7 +7,7 @@ for platform in node php
         n=$(($i * 100))
         php mk_list.php $n
         echo testing $platform with list size $n
-        ab -l -p list.json -T application/json -c 10 -n $n http://$platform/ >> benchmark.log
+        ab -l -p list.json -T application/json -c $i -n $n http://$platform/ >> benchmark.log
     done
 done
 echo done!
