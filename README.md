@@ -37,6 +37,8 @@ Compares bubble sort performance in Node and PHP running in CLI mode and as an H
 
 ### Run HTTP Tests
 
+    make test/web
+
     Server Software:        nginx/1.16.0
     Server Hostname:        php
     Server Port:            80
