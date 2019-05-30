@@ -1,0 +1,5 @@
+{
+  "name": "bubblesort-test",
+  "script": "index.js",
+  "instances": "max"
+}
