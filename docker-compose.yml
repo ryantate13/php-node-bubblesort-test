@@ -16,6 +16,7 @@ services:
     volumes:
       - ./php_web/index.php:/php/index.php
       - ./php_web/docker.conf:/usr/local/etc/php-fpm.d/docker.conf
+      - ./php_web/www.conf:/usr/local/etc/php-fpm.d/www.conf
       - ./bubble-sort-v2.php:/php/bubble-sort-v2.php
   benchmark:
     build: ./benchmark_web
