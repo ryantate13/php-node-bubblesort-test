@@ -1,13 +1,14 @@
-const bubbleSort = require('./bubble-sort-v2');
+const bubbleSort = require('./bubble-sort-v2'),
+    bodyParser = require('body-parser'),
+    app = require('express')();
 
-require('http').createServer((req, res) => {
-    let body = '';
-    req.on('data', chunk => body += chunk.toString());
-    req.on('end', () => {
-        const list = JSON.parse(body);
-        const start = process.hrtime.bigint();
-        bubbleSort(list);
-        const end = process.hrtime.bigint();
-        res.end(String(end - start));
-    });
-}).listen(80);
+app.use(bodyParser.json());
+
+app.post('*', (req, res) => {
+    const start = process.hrtime.bigint();
+    bubbleSort(req.body);
+    const end = process.hrtime.bigint();
+    res.end(String(end - start));
+});
+
+app.listen(80);
