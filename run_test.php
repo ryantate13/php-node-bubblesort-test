@@ -1,26 +1,57 @@
 <?php
 
-$runners = [
-    'php' => 'php',
-    'node' => 'js'
-];
-
-$tests = [];
-
-$number_of_runs = 100;
-
-foreach (range(1, 10) as $n) {
-    $list_size = $n * 100;
-    `php mk_list.php $list_size`;
-    foreach ($runners as $bin => $ext) {
-        $tests[$list_size][$bin] = [];
-        foreach (range(1, $number_of_runs) as $_)
-            $tests[$list_size][$bin][] = floatval(`$bin test.$ext`);
-    }
+function algorithm_stats(string $runner, int $list_size, array $results)
+{
+    sort($results);
+    $n = count($results);
+    $average = $n ? (array_sum($results) / $n) : 0;
+    $stats = [
+        'runner' => $runner,
+        'list_size' => $list_size,
+        'runs' => $n,
+        'min' => min($results),
+        'max' => max($results),
+        'mean' => $average
+    ];
+    $even = $n % 2 === 0;
+    $mid = $n / 2;
+    $stats['median'] = $even ? (($results[$mid - 1] + $results[$mid]) / 2) : $results[intval(floor($mid))];
+    if ($average) {
+        foreach ($results as $i => $_)
+            $results[$i] = ($results[$i] - $average) ** 2;
+        $stats['sd'] = sqrt(array_sum($results) / $n);
+    } else
+        $stats['sd'] = 0;
+    foreach (['mean', 'median', 'sd'] as $k)
+        $stats[$k] = round($stats[$k]);
+    return $stats;
 }
 
-foreach ($tests as $list_size => $results) {
-    echo "list size: $list_size\n";
-    foreach ($results as $type => $result)
-        echo "time elapsed (nanoseconds) for $type is " . number_format(floor(min($result))) . "\n";
+$runners = [
+    'php' => 'php',
+    'node' => 'js',
+    'rust' => ''
+];
+
+$number_of_runs = 10000;
+
+$stats = [];
+
+foreach ($runners as $bin => $ext) {
+    foreach (range(1, 10) as $n) {
+        $list_size = $n * 100;
+        error_log("testing $bin with list size $list_size");
+        `php mk_list.php $list_size`;
+        $results = [];
+        $run_cmd = $ext ? "$bin test.$ext" : './test';
+        for ($i = 0; $i < $number_of_runs; ++$i){
+            $results[] = intval(`$run_cmd`);
+            $j = $i + 1;
+            if($j && !($j % 1000))
+                error_log("completed $j tests");
+        }
+        $stat = algorithm_stats($bin, $list_size, $results);
+        $stats[] = $stat;
+        echo json_encode($stat) . "\n";
+    }
 }
