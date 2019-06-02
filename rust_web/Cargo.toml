@@ -4,5 +4,4 @@ edition = "2018"
 name = "rust_web"
 version = "0.1.0"
 [dependencies]
-serde = "*"
-serde_json = "*"
+warp = "*"

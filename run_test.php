@@ -33,9 +33,13 @@ $runners = [
     'rust' => ''
 ];
 
-$number_of_runs = 10000;
+$number_of_runs = 1000;
 
 $stats = [];
+
+$log_file = 'benchmark.cli.log';
+
+file_put_contents($log_file, '');
 
 foreach ($runners as $bin => $ext) {
     foreach (range(1, 10) as $n) {
@@ -47,11 +51,12 @@ foreach ($runners as $bin => $ext) {
         for ($i = 0; $i < $number_of_runs; ++$i){
             $results[] = intval(`$run_cmd`);
             $j = $i + 1;
-            if($j && !($j % 1000))
-                error_log("completed $j tests");
+            if($j && !($j % ($number_of_runs / 10)) && $j !== $number_of_runs)
+                error_log("Completed $j tests");
         }
+        error_log("Finished $number_of_runs tests");
         $stat = algorithm_stats($bin, $list_size, $results);
         $stats[] = $stat;
-        echo json_encode($stat) . "\n";
+        file_put_contents($log_file, json_encode($stat) . "\n", FILE_APPEND);
     }
 }

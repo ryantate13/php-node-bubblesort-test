@@ -1,5 +1,5 @@
-extern crate serde;
-extern crate serde_json;
+use warp::{self, Filter};
+use std::time::Instant;
 
 fn bubble_sort(mut list: Vec<i32>) -> Vec<i32> {
     let len = list.len() - 1;
@@ -22,9 +22,28 @@ fn bubble_sort(mut list: Vec<i32>) -> Vec<i32> {
     list
 }
 
+#[cfg(debug_assertions)]
+fn port() -> u16 {
+    8000
+}
+
+#[cfg(not(debug_assertions))]
+fn port() -> u16 {
+    80
+}
+
 fn main() {
-    let json = "[9,8,7,6,5,4,3,2,1]";
-    let mut list: Vec<i32> = serde_json::from_str(&json).unwrap();
-    list = bubble_sort(list);
-    println!("{:?}", list);
+    let bubble_sort_server = warp::post2()
+        .and(warp::body::json())
+        .map(|mut _list| -> String {
+            let now = Instant::now();
+            _list = bubble_sort(_list);
+            let time = now.elapsed().subsec_nanos();
+            format!("{}", time)
+        });
+
+    println!("rust_web up on port {}", port());
+
+    warp::serve(bubble_sort_server)
+        .run(([0, 0, 0, 0], port()));
 }

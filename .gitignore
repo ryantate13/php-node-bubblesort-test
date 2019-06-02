@@ -1,3 +1,5 @@
 .idea
 list.json
 rust_cli/list.json
+rust_web/target
+rust_cli/target

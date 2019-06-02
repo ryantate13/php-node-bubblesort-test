@@ -18,11 +18,13 @@ services:
       - ./php_web/docker.conf:/usr/local/etc/php-fpm.d/docker.conf
       - ./php_web/www.conf:/usr/local/etc/php-fpm.d/www.conf
       - ./bubble-sort-v2.php:/php/bubble-sort-v2.php
+  rust:
+    build: ./rust_web
   benchmark:
     build: ./benchmark_web
     volumes:
       - ./mk_list.php:/tmp/mk_list.php
-      - ./benchmark.log:/tmp/benchmark.log
+      - ./benchmark.web.log:/tmp/benchmark.web.log
     depends_on:
       - php
       - node
